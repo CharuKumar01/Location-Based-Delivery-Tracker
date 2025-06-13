@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">Delivery Tracker(Live)</string>
+    <string name="app_name">Pocket Pal</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="register">Sign Up</string>
+    <string name="login">Sign In</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="terms_and_privacy">I accept the terms and privacy policy</string>
+    <string name="fullName">Full Name</string>
+    <string name="delivery_boy">Delivery Boy</string>
+    <string name="customer">Customer</string>
+    <string name="at">Select Account Type</string>
+    <string name="login_page">Already have an account?</string>
+    <string name="register_page">Create Account?</string>
 </resources>
