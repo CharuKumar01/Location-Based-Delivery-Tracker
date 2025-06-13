@@ -5,15 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.example.deliverytrackerlive.R
+import com.example.deliverytrackerlive.databinding.FragmentHomeBinding
+import com.example.deliverytrackerlive.viewmodel.MainViewModel
 
 
 class Home : Fragment() {
+    private lateinit var bind: FragmentHomeBinding
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        bind = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        return bind.root
     }
 }

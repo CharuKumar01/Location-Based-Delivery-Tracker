@@ -1,18 +1,77 @@
 package com.example.deliverytrackerlive.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.example.deliverytrackerlive.R
+import com.example.deliverytrackerlive.databinding.FragmentMapBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 
 class Map : Fragment() {
+    private lateinit var bind: FragmentMapBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var googleMap: GoogleMap? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+    ): View {
+        bind = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        Log.d("charu", "onCreateView")
+        return bind.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        val mapFragment = childFragmentManager
+            .findFragmentById(R.id.mapFragment) as? SupportMapFragment
+
+        mapFragment?.getMapAsync {
+            googleMap = it
+            it.uiSettings.isZoomControlsEnabled = true
+            trackLiveLocation()
+        }
+    }
+
+    private fun trackLiveLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            googleMap?.isMyLocationEnabled = true
+            Log.d("charu", "Permission Granted")
+
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if(location != null){
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    Log.d("charu", "Location Found: $latLng")
+                }else{
+                    Log.d("charu", "Location Not Null")
+                }
+            }
+                .addOnFailureListener {
+                    Log.d("charu", "Error getting location: $it")
+                }
+        }else{
+            Log.d("charu", "Permission Denied")
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001)
+        }
     }
 }

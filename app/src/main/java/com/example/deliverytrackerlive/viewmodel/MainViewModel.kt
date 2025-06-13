@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.deliverytrackerlive.firebase.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -13,6 +14,10 @@ class MainViewModel : ViewModel() {
 
     private val _authState = MutableLiveData<FirebaseUser?>()
     val authState: MutableLiveData<FirebaseUser?> = _authState
+
+    private val _userAlreadyExists = MutableLiveData<Boolean>()
+    val userAlreadyExists: MutableLiveData<Boolean> = _userAlreadyExists
+
 
     fun signUp(email: String, password: String, type: String) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
@@ -26,9 +31,25 @@ class MainViewModel : ViewModel() {
             } else {
                 val error = task.exception
                 Log.e("charu", "Firebase Auth failed: ${error?.message}", error)
+                _userAlreadyExists.value = error is FirebaseAuthUserCollisionException
                 _authState.value = null
             }
         }
+    }
+
+    fun signIn(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                _authState.value = auth.currentUser
+                Log.d("charu", "Login Successful, uid = ${auth.currentUser?.uid}")
+            } else {
+                Log.e("charu", "login failed, ${task.exception?.message}", task.exception)
+            }
+        }
+    }
+
+    fun checkAuth(){
+        _authState.value = auth.currentUser
     }
 
 }

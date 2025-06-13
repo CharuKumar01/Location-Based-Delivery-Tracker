@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.deliverytrackerlive.R
 import com.example.deliverytrackerlive.databinding.FragmentRegisterBinding
 import com.example.deliverytrackerlive.viewmodel.MainViewModel
@@ -22,7 +23,7 @@ class Register : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         Log.d("charu", "onCreateView")
 
@@ -47,6 +48,14 @@ class Register : Fragment() {
                     Log.d("charu", "$email $password $type")
                     mainViewModel.signUp(email, password, type)
                 }
+            }
+        }
+        bind.tvLoginAccount.setOnClickListener {
+            findNavController().navigate(R.id.action_register_to_login)
+        }
+        mainViewModel.userAlreadyExists.observe(viewLifecycleOwner){
+            if(it){
+                bind.tfEmail.error = "User Already Exists"
             }
         }
     }
