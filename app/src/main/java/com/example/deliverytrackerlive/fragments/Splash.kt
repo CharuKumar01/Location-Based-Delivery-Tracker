@@ -37,14 +37,10 @@ class Splash : Fragment() {
         mainViewModel.authState.observe(viewLifecycleOwner) {
             if (it == null) {
                 findNavController().navigate(R.id.action_splash_to_register)
-            }else {
+            } else {
                 findNavController().navigate(R.id.action_splash_to_home2)
             }
         }
-
-//        lifecycleScope.launch {
-//            delay(300)
-            mainViewModel.checkAuth()
-//        }
+        mainViewModel.checkAuth()
     }
 }

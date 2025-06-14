@@ -15,6 +15,9 @@ class MainViewModel : ViewModel() {
     private val _authState = MutableLiveData<FirebaseUser?>()
     val authState: MutableLiveData<FirebaseUser?> = _authState
 
+    private val _userType = MutableLiveData<String?>()
+    val userType: MutableLiveData<String?> = _userType
+
     private val _userAlreadyExists = MutableLiveData<Boolean>()
     val userAlreadyExists: MutableLiveData<Boolean> = _userAlreadyExists
 
@@ -51,5 +54,18 @@ class MainViewModel : ViewModel() {
     fun checkAuth(){
         _authState.value = auth.currentUser
     }
+
+    fun fetchUserType() {
+        val uid = auth.currentUser?.uid ?: return
+        FirebaseFirestore.getInstance().collection("users").document(uid).get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    val type = it.getString("type")
+                    _userType.value = type
+                    Log.d("charu", "Fetched user type: $type")
+                }
+            }
+    }
+
 
 }
